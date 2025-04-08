@@ -1,0 +1,42 @@
+name: Build and Publish Docker Image
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          token_format: "access_token"
+          workload_identity_provider: "${{ secrets.REG_WIF }}"
+          service_account: "wif-gar@ultra-registry.iam.gserviceaccount.com"
+
+      - name: Build Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ultra-registry/docker/eos-evm-miner
+          tags: latest ${{ github.sha }} ${{ github.event.release.tag_name }}
+          context: .
+
+      - name: Push To GCR
+        id: push-to-gcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: europe-west1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-gcr.outputs.registry-paths }}"
