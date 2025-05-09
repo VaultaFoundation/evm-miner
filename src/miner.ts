@@ -10,6 +10,7 @@ export interface MinerConfig {
     privateKey: string;
     minerAccount: string;
     minerPermission: string;
+    authAccount: string;
     rpcEndpoints: Array<string>;
     expireSec: number;
     minerFeeMode: string;
@@ -217,7 +218,7 @@ export default class EosEvmMiner {
                 }
                 
                 const session = new Session({
-                    actor: this.config.minerAccount,
+                    actor: this.config.authAccount,
                     permission: this.config.minerPermission,
                     chain: {
                         id: info.chain_id,
@@ -248,7 +249,7 @@ export default class EosEvmMiner {
                     account: this.config.evmAccount,
                     name: "pushtx",
                     authorization: [{
-                        actor: this.config.minerAccount,
+                        actor: this.config.authAccount,
                         permission: this.config.minerPermission,
                     }],
                     data: {
