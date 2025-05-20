@@ -8,11 +8,12 @@ import {logger} from "./logger";
 const { 
     PRIVATE_KEY, 
     MINER_ACCOUNT, 
+    AUTH_ACCOUNT = "", // account that authorize the tx, also pay cpu/net, default to miner
     RPC_ENDPOINTS, 
     PORT = 50305, 
     EVM_ACCOUNT = "eosio.evm",
     EVM_SCOPE = "eosio.evm",
-    MINER_PERMISSION = "active",
+    MINER_PERMISSION = "active", // permission to authorize the tx
     GAS_PER_US = 74,
     EXPIRE_SEC = 60,
     MINER_FEE_MODE = "fixed", // default to fixed 0 fee
@@ -41,6 +42,7 @@ const eosEvmMiner = new EosEvmMiner({
     privateKey: PRIVATE_KEY,
     minerAccount: MINER_ACCOUNT,
     minerPermission: MINER_PERMISSION,
+    authAccount: AUTH_ACCOUNT.length > 0 ? AUTH_ACCOUNT : MINER_ACCOUNT,
     rpcEndpoints,
     expireSec: +EXPIRE_SEC,
     minerFeeMode: MINER_FEE_MODE,
@@ -98,7 +100,8 @@ logger.info(`
 ███████╗╚██████╔╝███████║    ███████╗ ╚████╔╝ ██║ ╚═╝ ██║
 ╚══════╝ ╚═════╝ ╚══════╝    ╚══════╝  ╚═══╝  ╚═╝     ╚═╝
     EOS EVM Miner listening @ http://127.0.0.1:${colors.blue(PORT.toString())}    
-        Your miner account is ${colors.blue(MINER_ACCOUNT)}  
+        Your miner account is ${colors.blue(MINER_ACCOUNT)}
+        authentication is ${colors.blue(eosEvmMiner.config.authAccount)}@${colors.blue(eosEvmMiner.config.minerPermission)}  
 `);
 
 export { server, eosEvmMiner };
