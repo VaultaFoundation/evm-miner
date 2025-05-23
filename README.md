@@ -38,7 +38,7 @@ For every transaction that you relay you will receive a reward in the form of Va
 
 ```bash
 git clone https://github.com/VaultaFoundation/evm-miner.git
-cd eos-evm-miner
+cd evm-miner
 ```
 
 ### Install dependencies
